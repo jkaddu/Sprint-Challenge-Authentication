@@ -34,7 +34,7 @@ function login(req, res) {
 		.first()
 		.then((user) => {
 			if (user && bcrypt.compareSync(password, user.password)) {
-				const token = generatedToken(user);
+				const token = generateToken(user);
 				res.status(200).json({ message: `Welcome ${user.username}`, token });
 			} else {
 				res.status(401).json({ message: 'Invalid Credentials.' });
@@ -43,6 +43,20 @@ function login(req, res) {
 		.catch((err) => {
 			res.status(500).json(err);
 		});
+}
+
+function generateToken(user) {
+	const payload = {
+		subject: usr.id,
+		username: user.username
+	};
+
+	const secret = 'Guard your heart';
+
+	const options = {
+		expiresIn: '1h'
+	};
+	return jwt.sign(payload, secret, options);
 }
 
 function getJokes(req, res) {
