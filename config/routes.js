@@ -1,6 +1,7 @@
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const secrets = require('../config/secrets.js');
 const Users = require('../users/users-model.js');
 
 const { authenticate } = require('../auth/authenticate');
@@ -37,7 +38,7 @@ function login(req, res) {
 				const token = generateToken(user);
 				res.status(200).json({ message: `Welcome ${user.username}`, token });
 			} else {
-				res.status(401).json({ message: 'Invalid Credentials.' });
+				res.status(401).json({ message: 'Get proper Credentials.' });
 			}
 		})
 		.catch((err) => {
@@ -47,16 +48,14 @@ function login(req, res) {
 
 function generateToken(user) {
 	const payload = {
-		subject: usr.id,
+		subject: user.id,
 		username: user.username
 	};
-
-	const secret = 'Guard your heart';
 
 	const options = {
 		expiresIn: '1h'
 	};
-	return jwt.sign(payload, secret, options);
+	return jwt.sign(payload, secrets.jwtKey, options);
 }
 
 function getJokes(req, res) {
